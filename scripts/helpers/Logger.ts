@@ -1,19 +1,20 @@
 export class Logger {
+    static log: Log[] = [];
     static DebugToConsole: boolean = true;
     static logError(message: any) {
-        this.log(LogSeverity.Error, message);
+        this.logMessage(LogSeverity.Error, message);
     }
 
     static logInfo(message: any) {
-        this.log(LogSeverity.Info, message)
+        this.logMessage(LogSeverity.Info, message)
     }
 
     static logDebug(message: any) {
-        this.log(LogSeverity.Debug, message)
+        this.logMessage(LogSeverity.Debug, message)
     }
 
     static logWarning(message: any) {
-        this.log(LogSeverity.Warning, message)
+        this.logMessage(LogSeverity.Warning, message)
     }
 
     static logException(message: string)
@@ -21,7 +22,7 @@ export class Logger {
         console.exception(message);
     }
 
-    private static log(severity: LogSeverity, message: any) {
+    private static logMessage(severity: LogSeverity, message: any) {
         if (Logger.DebugToConsole) {
             switch (severity) {
                 case LogSeverity.Debug:
@@ -38,7 +39,7 @@ export class Logger {
             }
         }
         const l = new Log(severity, message);
-        globalThis.gameLog ? globalThis.gameLog.push(l) : globalThis.gameLog = [l];
+        Logger.log ? Logger.log.push(l) : Logger.log = [l];
     }
 }
 

@@ -3,6 +3,7 @@ import { NumberHelper } from "../helpers/NumberHelper";
 import { CameraController } from "./CameraController";
 import { Game } from "./Game";
 import { GameGrid } from "./GameGrid";
+import { GameState } from "./GameState";
 import { Player } from "./Player";
 import { SpecialPawn } from "./SpecialPawn";
 
@@ -12,8 +13,7 @@ export class Engine {
     static fpsElement = document.getElementById('fps');
     static pauseButton = document.getElementById('toggle-pause-button');
     static gameArea = document.getElementById('game-area');
-    static game = Game;
-
+    static game: Game;
 
     constructor() {
         Engine.Init();
@@ -22,19 +22,12 @@ export class Engine {
     static Init()
     {
         // CameraController.dragElement(Engine.gameArea);
-        globalThis.engine = Engine;
-        Engine.game.currentLevel = Engine.game.levels[0];
-        if (!(globalThis as any).gameState) {
-            Logger.logInfo("building game state");
-            globalThis.gameState = {
-                tick: 0,
-                isTicking: true,
-                time: null,
-                level: {
-
-                }
-            } as { tick: number, isTicking: boolean, time: number }
-        }
+        Game.currentLevel = Game.levels[0];
+        Logger.logInfo("building game state");
+        GameState.tick = 0;
+        GameState.isTicking = true;
+        GameState.time = null;
+        GameState.level = null;
 
         if (Engine.pauseButton) {
             Engine.pauseButton.addEventListener('click', Engine.toggleGamePause);
@@ -48,33 +41,32 @@ export class Engine {
     }
 
     protected static tick(): void {
-        const engine = globalThis.engine;
-        const gameState = globalThis.gameState;
+
         const now = Date.now();
-        const fps = 1000 / (now - gameState.time);
-        gameState.time = Date.now();
-        gameState.tick++;
+        const fps = 1000 / (now - GameState.time);
+        GameState.time = Date.now();
+        GameState.tick++;
 
-        engine.curentTickElement.innerHTML = `${gameState.tick}`;
-        if (gameState.isTicking) {
-            if (gameState.tick % 100 === 0) {
-                Logger.logDebug(gameState.tick);
-                engine.runQuestsChecks();
-                engine.runSpecialPawnChecks();
+        Engine.curentTickElement.innerHTML = `${GameState.tick}`;
+        if (GameState.isTicking) {
+            if (GameState.tick % 100 === 0) {
+                Logger.logDebug(GameState.tick);
+                Engine.runQuestsChecks();
+                Engine.runSpecialPawnChecks();
 
-                engine.fpsElement.innerHTML = `${fps}`;
+                Engine.fpsElement.innerHTML = `${fps}`;
                 GameGrid.testLayer.draw();
                 Logger.logDebug(GameGrid.testLayer);
             }
 
  
-            window.requestAnimationFrame(engine.tick);
+            window.requestAnimationFrame(Engine.tick);
         }
     }
 
     protected static runQuestsChecks(): void {
         if (this.gameExists()) {
-            const player = globalThis.engine.game.player as Player
+            const player = Game.player as Player
             if (player) {
                 player.checkForPlayerPassedQuests();
             }
@@ -86,7 +78,7 @@ export class Engine {
 
     protected static runSpecialPawnChecks(): void {
         if (this.gameExists() && this.currentLevelIsLoaded()) {
-            const pawns = globalThis.engine.game.currentLevel?.specialPawns;
+            const pawns = Game.currentLevel?.specialPawns;
 
             //roll a random pawn
             const pawn = pawns[NumberHelper.getRandomInt(0, pawns.length)] as SpecialPawn;
@@ -99,7 +91,7 @@ export class Engine {
                     if (pawn.questsToGive?.length > 0)
                     {
                         for (const quest of pawn.questsToGive) {
-                            if (pawn.giveQuestToPlayer(quest, globalThis.engine.game.player))
+                            if (pawn.giveQuestToPlayer(quest, Game.player))
                             {
                                 break;
                             }
@@ -118,7 +110,7 @@ export class Engine {
     }
 
     private static gameExists(): boolean {
-        if (!globalThis.engine.game) {
+        if (!Game) {
             console.error('unable to find game');
             return false;
         }
@@ -127,7 +119,7 @@ export class Engine {
     }
 
     private static currentLevelIsLoaded() : boolean {
-        if (!globalThis.engine.game.currentLevel)
+        if (!Game.currentLevel)
         {
             console.error('current level is unloaded');
             return false;
@@ -136,9 +128,9 @@ export class Engine {
     }
 
     static toggleGamePause() {
-        globalThis.gameState.isTicking = !globalThis.gameState.isTicking;
-        if (globalThis.gameState.isTicking) {
-            window.requestAnimationFrame(globalThis.engine.tick);
+        GameState.isTicking = !GameState.isTicking;
+        if (GameState.isTicking) {
+            window.requestAnimationFrame(Engine.tick);
         }
     }
 }
