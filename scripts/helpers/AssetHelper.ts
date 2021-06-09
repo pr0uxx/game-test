@@ -5,8 +5,8 @@ import { Logger } from "./Logger";
 import { parseGIF, decompressFrames } from 'gifuct-js'
 
 export class AssetHelper {
-    static floorMapPath: string = "/assets/floor-tiles.jpg";
-    static testGifPath: string = "/assets/test-gif.gif"
+    static floorMapPath: string = "./assets/floor-tiles.jpg";
+    static testGifPath: string = "./assets/test-gif.gif"
 
     static loadPromises: Promise<any>[] = [];
 
