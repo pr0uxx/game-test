@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"lib" : [
+			"es6",
+			"DOM"
+		],
+		"noImplicitAny": false,
+		"noEmitOnError": true,
+		"removeComments": false,
+		"sourceMap": true,
+		"target": "esnext",
+		"outDir": "dist",
+		"moduleResolution": "node"
+	}
+}
