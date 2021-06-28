@@ -1,6 +1,5 @@
 import { Logger } from "../helpers/Logger";
 import { NumberHelper } from "../helpers/NumberHelper";
-import { CameraController } from "./CameraController";
 import { Game } from "./Game";
 import { GameGrid } from "./GameGrid";
 import { GameState } from "./GameState";
@@ -13,7 +12,26 @@ export class Engine {
     static fpsElement = document.getElementById('fps');
     static pauseButton = document.getElementById('toggle-pause-button');
     static gameArea = document.getElementById('game-area');
+    static loader = document.getElementById('loader');
     static game: Game;
+    static _isLoading: boolean = true;
+
+    static set isLoading(value: boolean) {
+        Engine._isLoading = value;
+
+        if (value === true) {
+            Engine.loader.classList.remove('d-none');
+        }
+
+        if (value === false) {
+            Engine.loader.classList.add('d-none');
+        }
+    }
+
+    static get isLoading() {
+        return Engine._isLoading;
+    }
+
 
     constructor() {
         Engine.Init();
@@ -21,6 +39,9 @@ export class Engine {
 
     static Init()
     {
+        Engine.isLoading = true;
+        //Engine.loader.classList.remove('d-none');
+        Engine.gameArea.classList.add('opacity-0');
         // CameraController.dragElement(Engine.gameArea);
         Game.currentLevel = Game.levels[0];
         Logger.logInfo("building game state");
@@ -33,7 +54,13 @@ export class Engine {
             Engine.pauseButton.addEventListener('click', Engine.toggleGamePause);
         }
 
-        GameGrid.InitGrid();
+        GameGrid.InitGrid().then(() => {
+            console.log('init grid done');
+            Engine.isLoading = false;
+            //Engine.loader.classList.add('d-none');
+            Engine.gameArea.classList.remove('d-none');
+            console.log(GameGrid.mapChunks);
+        });
     }
 
     static startGame(): void {
@@ -41,7 +68,10 @@ export class Engine {
     }
 
     protected static tick(): void {
-
+        if (Engine.isLoading) {
+            window.requestAnimationFrame(Engine.tick);
+            return;
+        }          
         const now = Date.now();
         const fps = 1000 / (now - GameState.time);
         GameState.time = Date.now();
@@ -50,16 +80,20 @@ export class Engine {
         Engine.curentTickElement.innerHTML = `${GameState.tick}`;
         if (GameState.isTicking) {
             if (GameState.tick % 100 === 0) {
-                Logger.logDebug(GameState.tick);
                 Engine.runQuestsChecks();
                 Engine.runSpecialPawnChecks();
 
-                Engine.fpsElement.innerHTML = `${fps}`;
-                GameGrid.testLayer.draw();
-                Logger.logDebug(GameGrid.testLayer);
+                /*GameGrid.testLayer.draw();*/
+                /*GameGrid.testLayer.batchDraw();*/
+                const test = GameGrid.mapChunks[0][0].children.find(x => x.name() == "00");
+                test.absolutePosition({ x: 10, y: 10 });
+                console.log('test result:');
+                console.log(test);
             }
-
- 
+            if (GameState.tick % 10 === 0) {
+                Engine.fpsElement.innerHTML = `${Math.round(fps)}`;
+            }
+            
             window.requestAnimationFrame(Engine.tick);
         }
     }

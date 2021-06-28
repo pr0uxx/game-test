@@ -17,28 +17,39 @@
             display: inline;
             position: absolute;
             z-index: -100;
-            width: 2000px;
-            height: 2000px;
+            width: 2500px;
+            height: 2500px;
             background-color: rgb(209, 171, 207);
         }
+
+		#debug-console {
+			background-color: #212529;
+            background-color: rgba(33,37,41,0.5);
+		}
     </style>
     <title>My Hotdog Stand</title>
 </head>
 
 <body>
+    <div id="loader">LOADING...PLEASE WAIT</div>
     <div id='game-area'>
         <h1>GAME AREA</h1>
     </div>
-    <div id="debug-console">
-        <p>Tick: <span id='current-tick'></span></p>
-        <p>FPS: <span id='fps'></span></p>
+    <div id="debug-console" class="d-flex text-light opacity-10">
+        <div class="p-2">
+            <p>Tick: <span id='current-tick'>00000</span></p>
+            <p>FPS: <span id='fps'>00</span></p>
+        </div>
+        <div>
+            <button type="button" class='btn btn-primary' id="toggle-pause-button">Pause/unpause</button>
+        </div>
+        
     </div>
-    <button type="button" class='btn btn-primary' id="toggle-pause-button">Pause/unpause</button>
+    
     <mobile>
         <div class='d-flex'>
             <div class='sidebar'>
                 <game-window>
-                    asd
                 </game-window>
             </div>
         </div>
