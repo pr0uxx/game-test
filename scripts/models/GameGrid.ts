@@ -22,6 +22,8 @@ export class GameGrid {
 		return new Promise<any>((resolve, reject) => {
 			const h = Engine.gameArea.clientHeight,
 				w = Engine.gameArea.clientWidth;
+			Engine.body.style.width = `${w + 400}px`
+			Engine.body.style.height = `${h + 400}px`
 			const ele = document.createElement('div');
 			ele.style.height = ele.style.width = `${GameGrid.gridSquarePx}px`;
 

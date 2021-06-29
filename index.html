@@ -2,69 +2,168 @@
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <style type="text/css">
-        #game-area {
-            /* background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%); */
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            display: inline;
-            position: absolute;
-            z-index: -100;
-            width: 7500px;
-            height: 7500px;
-            background-color: rgb(209, 171, 207);
-        }
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		  integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+	<style type="text/css">
+		body::-webkit-scrollbar {
+			display: none;
+		}
+
+		body {
+			background-color: #2a2d2f;
+		}
+
+/*		#outer-game-area {
+			
+			background-color: black;
+		}*/
+
+		#game-area {
+			/* background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%); */
+			background-size: 20px 20px;
+			background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+			display: inline;
+			position: absolute;
+			z-index: -100;
+			width: 7500px;
+			height: 7500px;
+			background-color: black;
+			margin: 200px;
+		}
+
+		#game-ui {
+			position: fixed;
+			width: max-content;
+			height: fit-content;
+		}
 
 		#debug-console {
 			background-color: #212529;
-            background-color: rgba(33,37,41,0.5);
+			background-color: rgba(33,37,41,0.5);
 		}
-    </style>
-    <title>My Hotdog Stand</title>
+
+		#loader {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background-color: rgba(33,37,41,0.5);
+			padding: 25px;
+		}
+
+		.clock2 {
+			width: 80px;
+			height: 80px;
+			border-radius: 100%;
+			background:;
+			margin: 10px;
+			border: 5px solid transparent;
+			position: relative;
+			box-shadow: 30px -30px 0 -25px #222,-30px -30px 0 -25px #222,20px 35px 0 -35px #222,25px 45px 0 -40px #222,-20px 35px 0 -35px #222,-25px 45px 0 -40px #222,inset 0 0 0 3px #fff, inset 0 6px 0 0 rgba(0, 0, 0, .3), inset 0 0 0 35px #09c, inset 0 0 0 40px #222;
+		}
+
+			.clock2:after {
+				content: "";
+				width: 5px;
+				height: 60px;
+				display: block;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				margin: auto;
+				box-shadow: inset 0px 2px 0 0 #fff, inset 0px 30px 0 0 #222;
+				animation: clock .5s linear infinite;
+			}
+
+
+
+			.clock2:before {
+				content: "";
+				width: 5px;
+				height: 50px;
+				display: block;
+				position: absolute;
+				top: 0;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				margin: auto;
+				box-shadow: inset 0px 2px 0 0 #fff, inset 0px 25px 0 0 #222;
+				animation: clockb 6s linear infinite;
+			}
+
+
+		@keyframes clock {
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+		@keyframes clockb {
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+		.clock, .clock2 {
+			display: inline-block
+		}
+	</style>
+	<title>My Hotdog Stand</title>
 </head>
 
 <body>
-    <div id="loader">LOADING...PLEASE WAIT</div>
-    <div id='game-area'>
-        <h1>GAME AREA</h1>
-    </div>
-    <div id="debug-console" class="d-flex text-light opacity-10">
-        <div class="p-2">
-            <p>Tick: <span id='current-tick'>00000</span></p>
-            <p>FPS: <span id='fps'>00</span></p>
-        </div>
-        <div>
-            <button type="button" class='btn btn-primary' id="toggle-pause-button">Pause/unpause</button>
-        </div>
-        
-    </div>
-    
-    <mobile>
-        <div class='d-flex'>
-            <div class='sidebar'>
-                <game-window>
-                </game-window>
-            </div>
-        </div>
-    </mobile>
-    <desktop></desktop>
+
+	<div id='game-area'>
+		<h1>GAME AREA</h1>
+	</div>
+	
+	<div id="game-ui">
+		<div id="loader" class="d-flex flex-column text-light">
+			LOADING...PLEASE WAIT
+			<div class="d-flex justify-content-center">
+				<div class="clock2"></div>
+			</div>
+		</div>
+		<div id="debug-console" class="d-flex text-light opacity-10">
+			<div class="p-2">
+				<p>Tick: <span id='current-tick'>00000</span></p>
+				<p>FPS: <span id='fps'>00</span></p>
+			</div>
+			<div>
+				<button type="button" class='btn btn-primary' id="toggle-pause-button">Pause/unpause</button>
+			</div>
+
+		</div>
+	</div>
+
+
+	<mobile>
+		<div class='d-flex'>
+			<div class='sidebar'>
+				<game-window>
+				</game-window>
+			</div>
+		</div>
+	</mobile>
+	<desktop></desktop>
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
-        integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
-        crossorigin="anonymous"></script>
-    <script type="module" src="dist/bundle.js" defer></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+			integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+			crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
+			integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
+			crossorigin="anonymous"></script>
+	<script type="module" src="dist/bundle.js" defer></script>
 </body>
 
 </html>

@@ -14,7 +14,9 @@ export class Engine {
     static fpsElement = document.getElementById('fps');
     static pauseButton = document.getElementById('toggle-pause-button');
     static gameArea = document.getElementById('game-area');
+    static gameUi = document.getElementById('game-ui');
     static loader = document.getElementById('loader');
+    static body = document.querySelector('body');
     static game: Game;
     static _isLoading: boolean = true;
     static playerController: PlayerController;
@@ -42,28 +44,36 @@ export class Engine {
 
     static Init()
     {
-        Engine.isLoading = true;
-        //Engine.loader.classList.remove('d-none');
-        Engine.gameArea.classList.add('opacity-0');
-        // CameraController.dragElement(Engine.gameArea);
-        Game.currentLevel = Game.levels[0];
-        Logger.logInfo("building game state");
-        GameState.tick = 0;
-        GameState.isTicking = true;
-        GameState.time = null;
-        GameState.level = null;
-        Engine.playerController = new PlayerController();
-        if (Engine.pauseButton) {
-            Engine.pauseButton.addEventListener('click', Engine.toggleGamePause);
-        }
+        
+        Engine.updateViewPortSize();
 
-        GameGrid.InitGrid().then(() => {
-            console.log('init grid done');
-            Engine.isLoading = false;
-            //Engine.loader.classList.add('d-none');
-            Engine.gameArea.classList.remove('d-none');
-            console.log(GameGrid.mapChunks);
+        window.requestAnimationFrame(() => {
+            Engine.isLoading = true;
+            Engine.gameArea.classList.add('opacity-0');
+            // CameraController.dragElement(Engine.gameArea);
+            Game.currentLevel = Game.levels[0];
+            Logger.logInfo("building game state");
+            GameState.tick = 0;
+            GameState.isTicking = true;
+            GameState.time = null;
+            GameState.level = null;
+            Engine.playerController = new PlayerController();
+            if (Engine.pauseButton) {
+                Engine.pauseButton.addEventListener('click', Engine.toggleGamePause);
+            }
+
+            window.requestAnimationFrame(() => {
+                GameGrid.InitGrid().then(() => {
+                    console.log('init grid done');
+                    Engine.isLoading = false;
+                    //Engine.loader.classList.add('d-none');
+                    Engine.gameArea.classList.remove('d-none');
+                    console.log(GameGrid.mapChunks);
+                });
+            })
+            
         });
+        
     }
 
     static startGame(): void {
@@ -103,6 +113,13 @@ export class Engine {
         }
     }
 
+    private static updateViewPortSize() {
+        GameGrid.viewPortHeight = window.innerHeight;
+        GameGrid.viewPortWidth = window.innerWidth;
+        Engine.gameUi.style.width = `${GameGrid.viewPortWidth}px`;
+        Engine.gameUi.style.height = `${GameGrid.viewPortHeight}px`;
+    }
+
     private static movePlayer() {
         let currentPos: Vector2d = null;
 
@@ -116,7 +133,7 @@ export class Engine {
 
         if (Engine.playerController.isActionPressed('down')) {
             currentPos = GameGrid.playerLayer.absolutePosition();
-            if (currentPos.y < Engine.gameArea.clientHeight - 50) {
+            if (currentPos.y < Engine.gameArea.clientHeight) {
                 currentPos.y += 10;
             }
 
@@ -134,7 +151,7 @@ export class Engine {
 
         if (Engine.playerController.isActionPressed('right')) {
             currentPos = GameGrid.playerLayer.absolutePosition();
-            if (currentPos.x < Engine.gameArea.clientWidth - 50) {
+            if (currentPos.x < Engine.gameArea.clientWidth) {
                 currentPos.x += 10;
             }
 
