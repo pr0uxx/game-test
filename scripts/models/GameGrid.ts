@@ -9,7 +9,8 @@ export class GameGrid {
 	static gridSquarePx = 50;
 	static stage: Konva.Stage;
 	static layers: Konva.Layer[];
-	static testLayer: Konva.Layer;
+	static mapLayer: Konva.Layer;
+	static playerLayer: Konva.Layer;
 	static viewPortHeight: number;
 	static viewPortWidth: number;
 	static viewPortScrollX: number;
@@ -27,8 +28,14 @@ export class GameGrid {
 			const noise2d = makeNoise2D(Date.now());
 			const noiseFunc = (x: number, y: number) => Math.floor(Math.abs(noise2d(x, y) * (FloorTile.tileTypes.length)));
 
+			GameGrid.viewPortHeight = window.innerHeight;
+			GameGrid.viewPortWidth = window.innerWidth;
 			GameGrid.noiseMap = makeRectangle(w / GameGrid.gridSquarePx, h / GameGrid.gridSquarePx, noiseFunc, { frequency: 0.06, octaves: 1 });
-			GameGrid.testLayer = new Konva.Layer();
+			GameGrid.mapLayer = new Konva.Layer();
+			GameGrid.playerLayer = new Konva.Layer();
+
+			FloorTile.water(10, 20, GameGrid.playerLayer);
+			
 
 			for (let x = 0; x < h; x += GameGrid.gridSquarePx) {
 				for (let y = 0; y < w; y += GameGrid.gridSquarePx) {
@@ -37,8 +44,6 @@ export class GameGrid {
 					//get chunk if exists else create new
 					const xIndex = Math.floor(x / 1000);
 					const yIndex = Math.floor(y / 1000);
-
-					console.log(`chunk is ${xIndex}${yIndex}`);
 
 					let chunkArray = GameGrid.mapChunks[xIndex];
 					let chunk = null;
@@ -49,10 +54,8 @@ export class GameGrid {
 						chunk = new Konva.Group();
 						if (!GameGrid.mapChunks[xIndex]) GameGrid.mapChunks[xIndex] = [];
 						GameGrid.mapChunks[xIndex][yIndex] = chunk;
-						GameGrid.testLayer.add(chunk);
+						GameGrid.mapLayer.add(chunk);
 					}
-
-					
 
 					FloorTile.tileTypes[noise](x, y, chunk);
 				}
@@ -68,7 +71,8 @@ export class GameGrid {
 			/*GameGrid.stage['layers'][0] = GameGrid.testLayer;*/
 
 			/*const flatChunks = [].concat.apply([], GameGrid.mapChunks) as Konva.Layer[];*/
-			GameGrid.stage.add(GameGrid.testLayer)
+			GameGrid.stage.add(GameGrid.mapLayer);
+			GameGrid.stage.add(GameGrid.playerLayer);
 			//for (let chunk of flatChunks) {
 			//	GameGrid.stage.add(chunk);
 			//	chunk.draw();

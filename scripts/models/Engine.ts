@@ -1,9 +1,11 @@
+import { Vector2d } from "konva/lib/types";
 import { Logger } from "../helpers/Logger";
 import { NumberHelper } from "../helpers/NumberHelper";
 import { Game } from "./Game";
 import { GameGrid } from "./GameGrid";
 import { GameState } from "./GameState";
 import { Player } from "./Player";
+import { PlayerController } from "./PlayerController";
 import { SpecialPawn } from "./SpecialPawn";
 
 export class Engine {
@@ -15,6 +17,7 @@ export class Engine {
     static loader = document.getElementById('loader');
     static game: Game;
     static _isLoading: boolean = true;
+    static playerController: PlayerController;
 
     static set isLoading(value: boolean) {
         Engine._isLoading = value;
@@ -49,7 +52,7 @@ export class Engine {
         GameState.isTicking = true;
         GameState.time = null;
         GameState.level = null;
-
+        Engine.playerController = new PlayerController();
         if (Engine.pauseButton) {
             Engine.pauseButton.addEventListener('click', Engine.toggleGamePause);
         }
@@ -77,6 +80,8 @@ export class Engine {
         GameState.time = Date.now();
         GameState.tick++;
 
+        Engine.movePlayer();
+
         Engine.curentTickElement.innerHTML = `${GameState.tick}`;
         if (GameState.isTicking) {
             if (GameState.tick % 100 === 0) {
@@ -87,14 +92,57 @@ export class Engine {
                 /*GameGrid.testLayer.batchDraw();*/
                 const test = GameGrid.mapChunks[0][0].children.find(x => x.name() == "00");
                 test.absolutePosition({ x: 10, y: 10 });
-                console.log('test result:');
-                console.log(test);
+                //console.log('test result:');
+                //console.log(test);
             }
             if (GameState.tick % 10 === 0) {
                 Engine.fpsElement.innerHTML = `${Math.round(fps)}`;
             }
             
             window.requestAnimationFrame(Engine.tick);
+        }
+    }
+
+    private static movePlayer() {
+        let currentPos: Vector2d = null;
+
+        if (Engine.playerController.isActionPressed('up')) {
+            currentPos = GameGrid.playerLayer.absolutePosition();
+            if (currentPos.y > 0) {
+                currentPos.y -= 10;
+            }
+            GameGrid.playerLayer.absolutePosition(currentPos);
+        }
+
+        if (Engine.playerController.isActionPressed('down')) {
+            currentPos = GameGrid.playerLayer.absolutePosition();
+            if (currentPos.y < Engine.gameArea.clientHeight - 50) {
+                currentPos.y += 10;
+            }
+
+            GameGrid.playerLayer.absolutePosition(currentPos);
+        }
+
+        if (Engine.playerController.isActionPressed('left')) {
+            currentPos = GameGrid.playerLayer.absolutePosition();
+            if (currentPos.x > 0) {
+                currentPos.x -= 10;
+            }
+
+            GameGrid.playerLayer.absolutePosition(currentPos);
+        }
+
+        if (Engine.playerController.isActionPressed('right')) {
+            currentPos = GameGrid.playerLayer.absolutePosition();
+            if (currentPos.x < Engine.gameArea.clientWidth - 50) {
+                currentPos.x += 10;
+            }
+
+            GameGrid.playerLayer.absolutePosition(currentPos);
+        }
+
+        if (currentPos) {
+            window.scrollTo(currentPos.x - GameGrid.viewPortWidth / 2, currentPos.y - GameGrid.viewPortHeight / 2);
         }
     }
 

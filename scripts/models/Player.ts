@@ -16,7 +16,6 @@ export class Player extends Pawn {
 
     checkForPlayerPassedQuests()
     {
-        Logger.logDebug(this.activeQuests);
         for (const quest of this.activeQuests) {
             if (quest.questPassed)
             {
