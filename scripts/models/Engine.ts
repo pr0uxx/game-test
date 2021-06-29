@@ -122,43 +122,33 @@ export class Engine {
 
     private static movePlayer() {
         let currentPos: Vector2d = null;
+        const playerDefaultMoveSpeed = 1;
 
         if (Engine.playerController.isActionPressed('up')) {
             currentPos = GameGrid.playerLayer.absolutePosition();
-            if (currentPos.y > 0) {
-                currentPos.y -= 10;
-            }
-            GameGrid.playerLayer.absolutePosition(currentPos);
+            currentPos.y -= playerDefaultMoveSpeed;
         }
 
         if (Engine.playerController.isActionPressed('down')) {
             currentPos = GameGrid.playerLayer.absolutePosition();
-            if (currentPos.y < Engine.gameArea.clientHeight) {
-                currentPos.y += 10;
-            }
-
-            GameGrid.playerLayer.absolutePosition(currentPos);
+            currentPos.y += playerDefaultMoveSpeed;
         }
 
         if (Engine.playerController.isActionPressed('left')) {
             currentPos = GameGrid.playerLayer.absolutePosition();
-            if (currentPos.x > 0) {
-                currentPos.x -= 10;
-            }
-
-            GameGrid.playerLayer.absolutePosition(currentPos);
+            currentPos.x -= playerDefaultMoveSpeed;
         }
 
         if (Engine.playerController.isActionPressed('right')) {
             currentPos = GameGrid.playerLayer.absolutePosition();
-            if (currentPos.x < Engine.gameArea.clientWidth) {
-                currentPos.x += 10;
-            }
-
-            GameGrid.playerLayer.absolutePosition(currentPos);
+            currentPos.x += playerDefaultMoveSpeed;
         }
 
         if (currentPos) {
+            const offset = (GameGrid.gridSquarePx * 1.5)
+            currentPos.x = currentPos.x <= Engine.gameArea.clientWidth - offset ? currentPos.x > 0 ? currentPos.x : 0 : Engine.gameArea.clientWidth - offset;
+            currentPos.y = currentPos.y <= Engine.gameArea.clientHeight - offset ? currentPos.y > 0 ? currentPos.y : 0 : Engine.gameArea.clientWidth - offset;
+            GameGrid.playerLayer.absolutePosition(currentPos);
             window.scrollTo(currentPos.x - GameGrid.viewPortWidth / 2, currentPos.y - GameGrid.viewPortHeight / 2);
         }
     }
