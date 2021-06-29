@@ -37,6 +37,16 @@ export class PlayerController {
 		}
 	}
 
+	isAnyActionPressed() {
+		for (var i in this.pressingActions) {
+			if (this.pressingActions[i] === true) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	isActionPressed(actionName: string) {
 		return this.pressingActions[actionName];
 	}

@@ -124,28 +124,33 @@ export class Engine {
         let currentPos: Vector2d = null;
         const playerDefaultMoveSpeed = 1;
 
-        if (Engine.playerController.isActionPressed('up')) {
+        if (Engine.playerController.isAnyActionPressed() === true) {
             currentPos = GameGrid.playerLayer.absolutePosition();
+        }
+
+        if (Engine.playerController.isActionPressed('up')) {
             currentPos.y -= playerDefaultMoveSpeed;
+            console.log('UP');
         }
 
         if (Engine.playerController.isActionPressed('down')) {
-            currentPos = GameGrid.playerLayer.absolutePosition();
             currentPos.y += playerDefaultMoveSpeed;
+            console.log('DOWN');
         }
 
         if (Engine.playerController.isActionPressed('left')) {
-            currentPos = GameGrid.playerLayer.absolutePosition();
             currentPos.x -= playerDefaultMoveSpeed;
+            console.log('LEFT');
         }
 
         if (Engine.playerController.isActionPressed('right')) {
-            currentPos = GameGrid.playerLayer.absolutePosition();
             currentPos.x += playerDefaultMoveSpeed;
+            console.log('RIGHT');
         }
 
         if (currentPos) {
             const offset = (GameGrid.gridSquarePx * 1.5)
+            console.log(currentPos);
             currentPos.x = currentPos.x <= Engine.gameArea.clientWidth - offset ? currentPos.x > 0 ? currentPos.x : 0 : Engine.gameArea.clientWidth - offset;
             currentPos.y = currentPos.y <= Engine.gameArea.clientHeight - offset ? currentPos.y > 0 ? currentPos.y : 0 : Engine.gameArea.clientWidth - offset;
             GameGrid.playerLayer.absolutePosition(currentPos);
