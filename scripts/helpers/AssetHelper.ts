@@ -48,7 +48,7 @@ export class FloorTile extends Konva.Rect {
     static tileTypes: ((x: number, y: number, layer: Layer | Konva.Group) => {})[] = [
         FloorTile.dirt,
         FloorTile.flowers,
-        FloorTile.water,
+        //FloorTile.water,
         FloorTile.daisies,
         FloorTile.grass,
         FloorTile.soil,
@@ -80,7 +80,7 @@ export class FloorTile extends Konva.Rect {
         return FloorTile.doTile(1,100, 0, x, y, layer);
     }
 
-    private static water(x: number, y: number, layer: Layer | Konva.Group): FloorTile {
+    public static water(x: number, y: number, layer: Layer | Konva.Group): FloorTile {
         return FloorTile.doTile(2,200, 0, x, y, layer);
     }
 
