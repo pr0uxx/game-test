@@ -7,29 +7,27 @@ import { GameState } from "./GameState";
 import { Player } from "./Player";
 import { PlayerController } from "./PlayerController";
 import { SpecialPawn } from "./SpecialPawn";
+import { UserInterface } from "./UserInterface";
 
 export class Engine {
     //onTick: Function[] = [];
-    static curentTickElement = document.getElementById('current-tick');
-    static fpsElement = document.getElementById('fps');
-    static pauseButton = document.getElementById('toggle-pause-button');
+    
     static gameArea = document.getElementById('game-area');
-    static gameUi = document.getElementById('game-ui');
-    static loader = document.getElementById('loader');
-    static body = document.querySelector('body');
+    
     static game: Game;
     static _isLoading: boolean = true;
     static playerController: PlayerController;
+    static userInterface: UserInterface;
 
     static set isLoading(value: boolean) {
         Engine._isLoading = value;
 
         if (value === true) {
-            Engine.loader.classList.remove('d-none');
+            Engine.userInterface.showLoader();
         }
 
         if (value === false) {
-            Engine.loader.classList.add('d-none');
+            Engine.userInterface.hideLoader();
         }
     }
 
@@ -44,10 +42,11 @@ export class Engine {
 
     static Init()
     {
-        
+        Engine.userInterface = new UserInterface();
         Engine.updateViewPortSize();
 
         window.requestAnimationFrame(() => {
+            
             Engine.isLoading = true;
             Engine.gameArea.classList.add('opacity-0');
             // CameraController.dragElement(Engine.gameArea);
@@ -58,9 +57,6 @@ export class Engine {
             GameState.time = null;
             GameState.level = null;
             Engine.playerController = new PlayerController();
-            if (Engine.pauseButton) {
-                Engine.pauseButton.addEventListener('click', Engine.toggleGamePause);
-            }
 
             window.requestAnimationFrame(() => {
                 GameGrid.InitGrid().then(() => {
@@ -92,7 +88,7 @@ export class Engine {
 
         Engine.movePlayer();
 
-        Engine.curentTickElement.innerHTML = `${GameState.tick}`;
+        Engine.userInterface.updateCurrentTick(GameState.tick);
         if (GameState.isTicking) {
             if (GameState.tick % 100 === 0) {
                 Engine.runQuestsChecks();
@@ -106,7 +102,7 @@ export class Engine {
                 //console.log(test);
             }
             if (GameState.tick % 10 === 0) {
-                Engine.fpsElement.innerHTML = `${Math.round(fps)}`;
+                Engine.userInterface.updateFps(fps);
             }
             
             window.requestAnimationFrame(Engine.tick);
@@ -116,8 +112,8 @@ export class Engine {
     private static updateViewPortSize() {
         GameGrid.viewPortHeight = window.innerHeight;
         GameGrid.viewPortWidth = window.innerWidth;
-        Engine.gameUi.style.width = `${GameGrid.viewPortWidth}px`;
-        Engine.gameUi.style.height = `${GameGrid.viewPortHeight}px`;
+        Engine.userInterface.gameUi.style.width = `${GameGrid.viewPortWidth}px`;
+        Engine.userInterface.gameUi.style.height = `${GameGrid.viewPortHeight}px`;
     }
 
     private static movePlayer() {
@@ -171,7 +167,7 @@ export class Engine {
     }
 
     protected static runSpecialPawnChecks(): void {
-        if (this.gameExists() && this.currentLevelIsLoaded()) {
+        if (Engine.gameExists() && Engine.currentLevelIsLoaded()) {
             const pawns = Game.currentLevel?.specialPawns;
 
             //roll a random pawn
@@ -226,5 +222,13 @@ export class Engine {
         if (GameState.isTicking) {
             window.requestAnimationFrame(Engine.tick);
         }
+    }
+
+    static wipeMapData() {
+        console.log('wipe map');
+        if (window.confirm('This will regenerate your map, you cannot undo this action!!!!')) {
+            localStorage.removeItem('noise-seed');
+        }
+        
     }
 }

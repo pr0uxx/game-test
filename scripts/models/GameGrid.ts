@@ -22,12 +22,21 @@ export class GameGrid {
 		return new Promise<any>((resolve, reject) => {
 			const h = Engine.gameArea.clientHeight,
 				w = Engine.gameArea.clientWidth;
-			Engine.body.style.width = `${w + 400}px`
-			Engine.body.style.height = `${h + 400}px`
+			Engine.userInterface.body.style.width = `${w + 400}px`
+			Engine.userInterface.body.style.height = `${h + 400}px`
 			const ele = document.createElement('div');
 			ele.style.height = ele.style.width = `${GameGrid.gridSquarePx}px`;
 
-			const noise2d = makeNoise2D(Date.now());
+			const existingSeed = localStorage.getItem('noise-seed');
+			let noiseSeed: number = Date.now();
+			if (existingSeed) {
+				noiseSeed = Number(existingSeed);
+			}
+			else {
+				localStorage.setItem('noise-seed', noiseSeed.toString())
+			}
+
+			const noise2d = makeNoise2D(noiseSeed);
 			const noiseFunc = (x: number, y: number) => Math.floor(Math.abs(noise2d(x, y) * (FloorTile.tileTypes.length)));
 
 			GameGrid.viewPortHeight = window.innerHeight;
@@ -44,8 +53,8 @@ export class GameGrid {
 					const noise = GameGrid.noiseMap[x / GameGrid.gridSquarePx][y / GameGrid.gridSquarePx];
 
 					//get chunk if exists else create new
-					const xIndex = Math.floor(x / 1000);
-					const yIndex = Math.floor(y / 1000);
+					const xIndex = Math.floor(x / 10000);
+					const yIndex = Math.floor(y / 10000);
 
 					let chunkArray = GameGrid.mapChunks[xIndex];
 					let chunk = null;

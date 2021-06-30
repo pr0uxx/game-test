@@ -18,11 +18,6 @@
 			background-color: #2a2d2f;
 		}
 
-/*		#outer-game-area {
-			
-			background-color: black;
-		}*/
-
 		#game-area {
 			/* background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%); */
 			background-size: 20px 20px;
@@ -60,7 +55,7 @@
 			width: 80px;
 			height: 80px;
 			border-radius: 100%;
-			background:;
+			/*background:;*/
 			margin: 10px;
 			border: 5px solid transparent;
 			position: relative;
@@ -138,7 +133,9 @@
 				<p>FPS: <span id='fps'>00</span></p>
 			</div>
 			<div>
-				<button type="button" class='btn btn-primary' id="toggle-pause-button">Pause/unpause</button>
+				<button type="button" class='btn btn-primary btn-sm' id="toggle-pause-button">Pause/unpause</button>
+				<button type="button" class="btn btn-danger btn-sm" id="wipe-map-data-button">Wipe Map Data</button>
+				<button type="button" class="btn btn-default btn-sm text-light" id="hide-dev-console-button">Hide Dev Console</button>
 			</div>
 
 		</div>
